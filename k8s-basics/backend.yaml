@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+  labels:
+    app: node-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-pod
+  template:
+    metadata:
+      name: node-pod
+      labels:
+        app: node-pod
+    spec:
+      containers:
+        - name: node-container
+          image: marcowang01/backend # references custom image on dockerhub
+          ports:
+            - containerPort: 3000 # match with server.js port
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          env: # mounts configMap onto pod
+          - name: TIME
+            valueFrom: 
+              configMapKeyRef:
+                name: configmap
+                key: backend-time
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-service
+  labels:
+    app: node-service
+spec:
+
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 3000
+      # must match with containerPort
+      targetPort: 3000
+  selector:
+    app: node-pod

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-pod
+  template:
+    metadata:
+      name: frontend-pod
+      labels:
+        app: frontend-pod
+    spec:
+      containers:
+        - name: frontend-container
+          image: marcowang01/frontend # references custom image on dockerhub
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 80 # matches with default nginx port 
+          env: # mounts configMap onto pod
+          - name: TIME
+            valueFrom: 
+              configMapKeyRef:
+                name: configmap
+                key: frontend-time
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: frontend-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      # must match with container port
+      targetPort: 80
+  selector:
+    app: frontend-pod
+    

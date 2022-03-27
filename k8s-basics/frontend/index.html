@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- simple client front end page to communicate with node.js backend app -->
+<head>
+    <meta charset="utf-8" />
+    <!-- imports ajax from jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <input name="inpText" type="text" maxlength="512" id="inpText"/>
+    <button id="button" value="val" name="but">Send to pod 2</button>
+    <div id="result"></div>
+</body>
+
+<script>
+    $(document).ready(() => {
+        // sends api ajax requst on button click
+        $("#button").click((e) => {
+            e.preventDefault();
+            const inp = document.getElementById("inpText").value;
+            console.log(`sending ${inp} to pod 2`)
+            // logs runtime response time 
+            console.time("timer1");
+            // performs an ajax get api request to endpoint specified in textbox
+            $.ajax({
+                url: `/${inp}/`,
+                type: "GET",
+                data: {
+                    "Content-Type": undefined
+                },
+                // succesful result appends response to result div
+                success: (res) => {
+                    if(res){
+                        console.log(res)
+                        $("#result")[0].innerHTML += `${res}<br>`;
+                        console.timeEnd("timer1");
+                    }
+                },
+                error: (err) => {
+                    console.log(err)
+                }
+            })
+        })
+    })
+</script>
+
+</html>

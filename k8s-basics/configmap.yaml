@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+data:
+  backend-time: "5.1 ms"
+  frontend-time: "5.2 ms"
+
